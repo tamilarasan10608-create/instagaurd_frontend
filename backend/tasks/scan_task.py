@@ -33,9 +33,8 @@ celery_app.conf.update(
 )
 
 
-@celery_app.task(bind=True, name="tasks.run_scan", max_retries=2, default_retry_delay=30)
-def run_scan_task(self, scan_id: str):
-    """Main scan task. scan_id is a UUID string."""
+def execute_scan(scan_id: str):
+    """Core scan execution function. Safe for local thread or Celery."""
     from database import SessionLocal
     from models.scan import Scan, ScanStatus
     from models.post_result import PostResult
@@ -64,7 +63,7 @@ def run_scan_task(self, scan_id: str):
             progress_cb=scrape_progress,
         )
 
-        # Filter out videos and keep exactly max_posts valid image posts
+        # Filter out videos and keep valid image posts
         valid_image_posts = []
         for p in raw_posts:
             if p.get("image_url", "").strip() and not p.get("is_video"):
@@ -74,14 +73,12 @@ def run_scan_task(self, scan_id: str):
         
         posts = valid_image_posts
 
-        # FIX: total_posts = exact number of valid images we will analyze
         scan.total_posts = len(posts)
         scan.status = ScanStatus.ANALYZING
         db.commit()
         logger.info(f"Filtered to {len(posts)} valid image posts for @{scan.instagram_username}")
 
         # ── Phase 2: Analyze ─────────────────────────────────────────────────
-        # FIX: commit after EVERY post so partial results survive any crash
         durations = []
         post_index = 0
 
@@ -103,7 +100,6 @@ def run_scan_task(self, scan_id: str):
                 del image_bytes
                 continue
             finally:
-                # RAM-only protocol: discard bytes immediately after use
                 del image_bytes
 
             pr = PostResult(
@@ -126,7 +122,6 @@ def run_scan_task(self, scan_id: str):
             scan.analyzed_posts += 1
             durations.append(result["scan_duration_ms"])
 
-            # FIX: commit after every single post — partial results visible in UI immediately
             db.commit()
             logger.info(
                 f"  Post {post_index}: {'SUSPICIOUS' if result['is_suspicious'] else 'clean'} "
@@ -156,6 +151,15 @@ def run_scan_task(self, scan_id: str):
         except Exception:
             pass
         logger.exception(f"Scan {scan_id} failed: {exc}")
-        raise self.retry(exc=exc)
+        raise exc
     finally:
         db.close()
+
+
+@celery_app.task(bind=True, name="tasks.run_scan", max_retries=2, default_retry_delay=30)
+def run_scan_task(self, scan_id: str):
+    """Celery task wrapper around execute_scan."""
+    try:
+        execute_scan(scan_id)
+    except Exception as exc:
+        raise self.retry(exc=exc)

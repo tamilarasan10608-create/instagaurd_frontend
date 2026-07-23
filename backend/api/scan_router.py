@@ -11,7 +11,7 @@ from models.post_result import PostResult
 from utils.auth import get_current_user
 from utils.hashing import hash_report_dict, hash_pdf_bytes, build_report_payload
 from api.schemas import StartScanRequest, ScanOut, ScanDetailOut, SealResponse
-from tasks.scan_task import run_scan_task
+from tasks.scan_task import run_scan_task, execute_scan
 
 router = APIRouter(prefix="/api/scans", tags=["scans"])
 
@@ -36,7 +36,7 @@ def start_scan(
         scan.celery_task_id = task.id
     except Exception:
         import threading
-        t = threading.Thread(target=run_scan_task, args=(str(scan.id),), daemon=True)
+        t = threading.Thread(target=execute_scan, args=(str(scan.id),), daemon=True)
         t.start()
         scan.celery_task_id = "local-thread"
 
