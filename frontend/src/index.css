@@ -1,0 +1,269 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #f8fafc;
+    --text-primary: #0f172a;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(0, 0, 0, 0.08);
+  }
+
+  .dark {
+    --bg-primary: #070a11;
+    --text-primary: #f8fafc;
+    --card-bg: rgba(13, 18, 32, 0.8);
+    --card-border: rgba(59, 130, 246, 0.15);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: #0d1220;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: #1e3a5f;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
+  }
+}
+
+@layer components {
+
+  /* Animated circuit-board background in Dark Mode */
+  .dark .circuit-bg {
+    background-color: #070a11;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% 30%, rgba(37, 99, 235, 0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 70%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect width='60' height='60' fill='none'/%3E%3Cpath d='M10 0v10h10V0M10 50v10h10V50M40 0v10h10V0M40 50v10h10V50M0 10h10v10H0M50 10h10v10H50M0 40h10v10H0M50 40h10v10H50' stroke='rgba(59,130,246,0.08)' stroke-width='0.5' fill='none'/%3E%3C/svg%3E");
+  }
+
+  .circuit-bg {
+    background-color: #f1f5f9;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 70%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+  }
+
+  .glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+  }
+
+  .glass-card-hover {
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .dark .glass-card-hover:hover {
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 24px rgba(59, 130, 246, 0.15);
+  }
+
+  .glass-card-hover:hover {
+    border-color: rgba(59, 130, 246, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  :root:not(.dark) .input-field {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+  }
+
+  .input-field::placeholder {
+    color: rgba(148, 163, 184, 0.6);
+  }
+
+  .input-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.92;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: scale(0.99);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-google {
+    width: 100%;
+    padding: 12px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+
+  .btn-google:hover {
+    background: #f8fafc;
+  }
+
+  /* Stat cards */
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-card.suspicious {
+    border-color: rgba(239, 68, 68, 0.4);
+  }
+
+  .stat-card.clean {
+    border-color: rgba(34, 197, 94, 0.4);
+  }
+
+  /* Image result cards */
+  .result-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .result-card:hover {
+    transform: scale(1.02);
+  }
+
+  .result-card.suspicious {
+    border-color: rgba(239, 68, 68, 0.7);
+  }
+
+  .result-card.clean {
+    border-color: rgba(34, 197, 94, 0.5);
+  }
+
+  /* Scanning animation overlay */
+  .scan-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+        transparent 45%,
+        rgba(59, 130, 246, 0.15) 50%,
+        transparent 55%);
+    animation: scanLine 2s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .status-badge.pending {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+  }
+
+  .status-badge.scraping {
+    background: rgba(250, 204, 21, 0.15);
+    color: #fbbf24;
+  }
+
+  .status-badge.analyzing {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+
+  .status-badge.completed {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+  }
+
+  .status-badge.failed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+}
